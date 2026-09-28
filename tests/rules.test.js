@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {admit, validPlacement, cells, tickRooms, chooseVictim, canStart} from '../src/rules.js';
+test('one refusal, acceptance remains available',()=>{const s={refused:0};assert.equal(admit(s,false),true);assert.equal(admit(s,false),false);assert.equal(admit(s,true),true);assert.equal(s.refused,1)});
+test('polyomino boundaries, overlap and mirror',()=>{const s={shape:'S',side:0,col:0};assert.equal(validPlacement({...s,col:6},[]),false);assert.equal(validPlacement({shape:'L',side:0,col:0},[s]),false);assert.equal(validPlacement({shape:'Q',side:1,col:4},[s]),true);assert.equal(cells({shape:'L',mirror:true,col:0,side:0}).some(([x,y])=>x===1&&y===1),true)});
+test('blackout kills once at threshold and satiates hotel',()=>{const rooms=[{alive:true,on:false,dark:74,emergency:0},{alive:true,on:false,dark:10,emergency:0}];const s={paused:false,satiated:false};tickRooms(s,rooms,1);assert.equal(rooms[0].alive,false);assert.equal(s.satiated,true);tickRooms(s,rooms,100);assert.equal(rooms[1].alive,true)});
+test('pause freezes emergency power and danger',()=>{const r=[{alive:true,on:false,dark:20,emergency:5}];tickRooms({paused:true},r,90);assert.equal(r[0].emergency,5);assert.equal(r[0].dark,20)});
+test('power restores timer and empty rooms do not die',()=>{const r=[{alive:true,on:true,dark:74,emergency:0},{alive:false,on:false,dark:0,emergency:0}];tickRooms({},r,2);assert.equal(r[0].dark,0);assert.equal(r[1].dark,0)});
+test('victim selection excludes murderer and guarded guests',()=>{const r=[{id:'a',role:'killer',alive:true,x:0},{id:'b',role:'civilian',alive:true,x:2},{id:'c',role:'sheriff',alive:true,x:8}];assert.equal(chooseVictim(r,'b')?.id,'c');assert.equal(chooseVictim(r,'a'),null)});
+test('cannot start with unassigned guest or over capacity',()=>{assert.equal(canStart([{id:'a'}],[],4),false);assert.equal(canStart([{id:'a'}],[{guestId:'a',shape:'Q'}],1),false);assert.equal(canStart([{id:'a'}],[{guestId:'a',shape:'S'}],4),true)});

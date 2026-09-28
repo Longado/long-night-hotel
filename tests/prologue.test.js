@@ -1,0 +1,6 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import * as P from '../src/prologue-state.js';
+test('opening is action gated and cannot take keys or finish out of order',()=>{assert.equal(typeof P.create,'function');const s=P.create();assert.equal(P.act(s,'take'),false);assert.equal(P.act(s,'finish'),false);P.act(s,'door');P.act(s,'listen');P.act(s,'ledger');assert.equal(P.act(s,'take'),false);P.act(s,'sign');assert.equal(P.act(s,'take'),true);assert.equal(P.act(s,'take'),false);assert.equal(P.act(s,'finish'),true)});
+test('optional inspection is not a progression gate; reload retains completed actions',()=>{assert.equal(typeof P.create,'function');const s=P.create();for(const a of ['door','listen','ledger','sign','take'])P.act(s,a);const loaded=JSON.parse(JSON.stringify(s));assert.equal(P.ready(loaded),true);assert.equal(loaded.phone,false);assert.equal(P.act(loaded,'finish'),true)});
+test('closed entrance blocks passage and entering requires the doorway',()=>{assert.equal(typeof P.move,'function');const s=P.create();s.player={x:0,z:-9.2};P.move(s,0,1);assert.ok(s.player.z<=-9.2);P.act(s,'door');P.move(s,0,1);assert.ok(s.player.z> -9);s.player={x:2,z:-9.2};P.move(s,0,1);assert.ok(s.player.z<=-9.2)});

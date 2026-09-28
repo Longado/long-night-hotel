@@ -1,0 +1,6 @@
+import {chromium} from '@playwright/test';
+import assert from 'node:assert/strict';
+const browser=await chromium.launch({channel:'chrome',headless:true});
+const page=await browser.newPage({viewport:{width:1280,height:720}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+await page.goto('http://127.0.0.1:4173');await page.locator('[data-act=new]').click();await page.locator('[data-act=enter]').first().click();for(let i=0;i<3;i++)await page.locator('[data-act=accept]').click();await page.locator('[data-act=auto]').click();await page.locator('[data-act=night]').click();
+const before=await page.evaluate(()=>JSON.parse(localStorage.getItem('long-night-mvp-v1')).state);await page.reload();await page.locator('[data-act=load]').click();assert.match(await page.locator('.hud').innerText(),/先去 101 房/);await page.keyboard.press('Escape');await page.screenshot({path:'verification/v2/08-recovered-1280.png'});const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('long-night-mvp-v1')).state);assert.equal(after.cash,before.cash);assert.deepEqual(after.rooms,before.rooms);assert.deepEqual(errors,[]);console.log('PASS: actual night-start checkpoint survives reload; rooms/cash preserved; 1280x720 pause screen rendered; zero page errors.');await browser.close();

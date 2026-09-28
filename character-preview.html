@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>住客人物样张 · 长夜旅店</title></head>
+<body>
+ <canvas id="world" aria-label="长夜旅店中的唐宁人物样片"></canvas>
+ <header class="sample-heading"><span>长夜旅店 / CHARACTER STUDIES</span><h1 id="guest-name">唐宁</h1><p>人物画风试制 · 角色样张</p><a href="./">返回游戏</a><a href="./assets/props/ATTRIBUTION.html" target="_blank" rel="noopener">素材鸣谢</a></header>
+ <aside class="sample-controls" aria-label="人物样片控制">
+  <p class="sample-intro">在现有旅店里查看人物。这里只切换样片视角，不推进剧情或改变存档。</p>
+  <div class="guest-picker"><label for="guest-select">选择住客</label><select id="guest-select" aria-label="选择住客"></select></div>
+  <fieldset><legend>查看场景</legend><div class="button-row"><button data-view="reception">前台</button><button data-view="peep">猫眼</button><button data-view="corridor">走廊</button></div></fieldset>
+  <fieldset data-controls="reception"><legend>谈话神态</legend><div class="button-row"><button data-expression="neutral">平静</button><button data-expression="guarded">戒备</button><button data-expression="explaining">解释</button></div></fieldset>
+  <fieldset data-controls="peep" hidden><legend>房间状态</legend><div class="button-row"><button data-room="standard">标准房</button><button data-room="suite">套房</button><button data-room="away">已离房</button></div></fieldset>
+  <fieldset data-controls="corridor" hidden><legend>人物朝向</legend><div class="button-row"><button data-angle="front">正面</button><button data-angle="side">侧面</button><button data-angle="back">背面</button></div></fieldset>
+  <button id="toggle-light" class="light-button">灯光：开</button>
+  <button id="toggle-props" class="light-button prop-closeup">物品近看</button>
+  <p id="prop-status" class="scene-note" role="status" hidden></p>
+  <p id="scene-note" class="scene-note" role="status"></p>
+  <figure class="portrait-card"><img id="portrait-preview" alt="唐宁的中性神态证件照"><figcaption><b id="portrait-name">唐宁</b><br><span>登记证件照</span></figcaption></figure>
+  <details><summary>样片状态</summary><pre id="preview-state" aria-label="人物样片状态"></pre></details>
+ </aside>
+ <p id="load-status" class="load-status" role="status">正在准备人物样片…</p>
+ <script type="module" src="/src/character-preview.js"></script>
+</body>
+</html>

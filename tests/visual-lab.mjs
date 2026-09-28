@@ -1,0 +1,25 @@
+import {chromium} from '@playwright/test';
+import assert from 'node:assert/strict';
+const browser=await chromium.launch({channel:'chrome',headless:true});
+try{const p=await browser.newPage({viewport:{width:1440,height:900}});const errors=[];p.on('pageerror',e=>errors.push(e.message));
+ await p.goto('http://127.0.0.1:4173/visual-lab.html');
+ await p.waitForTimeout(700);
+ assert.equal(await p.locator('.paper-work').isVisible(),false);
+ const beamOn=await p.screenshot({path:'verification/visual-lab-v4/00-corridor.png'});
+ await p.keyboard.press('f');assert.equal(await p.locator('#flashlight').isChecked(),false);await p.waitForTimeout(200);
+ const beamOff=await p.screenshot({path:'verification/visual-lab-v4/00-corridor-no-flash.png'});assert.notDeepEqual(beamOn,beamOff);
+ await p.keyboard.press('f');await p.keyboard.down('w');await p.waitForTimeout(1200);await p.keyboard.up('w');
+ await p.screenshot({path:'verification/visual-lab-v4/00-corridor-walk.png'});
+ await p.locator('[data-view=reception]').click();
+ assert.equal(await p.locator('.paper-work').isVisible(),true);
+ assert.match(await p.locator('body').innerText(),/来客核验/);
+ await p.locator('[data-field=id-dob]').click();await p.locator('[data-field=booking-dob]').click();
+ await p.locator('#question').click();assert.match(await p.locator('#response').innerText(),/四月十七/);
+ await p.locator('#verify').click();assert.match(await p.locator('#checks').innerText(),/1/);
+ await p.locator('#verify').click();assert.match(await p.locator('#checks').innerText(),/1/);
+ await p.screenshot({path:'verification/visual-lab-v4/01-reception.png'});
+ await p.locator('[data-view=room]').click();await p.locator('[data-light=night]').click();await p.waitForTimeout(1000);await p.screenshot({path:'verification/visual-lab-v4/02-room-night.png'});
+ await p.locator('[data-light=day]').click();await p.locator('#details').uncheck();await p.waitForTimeout(400);await p.screenshot({path:'verification/visual-lab-v4/03-base.png'});await p.locator('#details').check();await p.waitForTimeout(400);await p.screenshot({path:'verification/visual-lab-v4/04-refined.png'});
+ await p.setViewportSize({width:1280,height:720});await p.screenshot({path:'verification/visual-lab-v4/05-small.png'});assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+ assert.deepEqual(errors,[]);console.log('PASS: discrepancy selection, question, one-time verification cost, room/light/detail controls, 1280 layout; no page errors.');
+}finally{await browser.close()}
